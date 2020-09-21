@@ -4,15 +4,15 @@ import java.util.List;
 
 public class JsonArray {
 
-    JsonArray from(String jsonString) {
+    public JsonArray from(String jsonString) {
         return this;
     }
 
-    JsonArray from(List<Object> jsonList) {
+    public JsonArray from(List<Object> jsonList) {
         return this;
     }
 
-    String stringify() {
+    public String stringify() {
         return null;
     }
 
