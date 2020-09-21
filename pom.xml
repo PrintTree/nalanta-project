@@ -8,11 +8,5 @@
     <artifactId>nalanta-project</artifactId>
     <packaging>pom</packaging>
     <version>1.0</version>
-    <modules>
-        <module>nalanta-core</module>
-        <module>nalanta-boot</module>
-        <module>nalanta-application</module>
-    </modules>
-
 
 </project>
