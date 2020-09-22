@@ -40,6 +40,14 @@ public class JsonObject {
         return this;
     }
 
+    public Boolean bool(String key) {
+        return null;
+    }
+
+    public JsonObject bool(String key, Boolean value) {
+        return this;
+    }
+
     public JsonObject object(String key) {
         return null;
     }

@@ -16,4 +16,12 @@ public class JsonArray {
         return null;
     }
 
+    public String string(int index) {
+        return null;
+    }
+
+    public JsonArray string(int index, String value) {
+        return this;
+    }
+
 }
