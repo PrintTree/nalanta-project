@@ -1,4 +1,4 @@
-package org.nalanta.http;
+package org.nalanta.session;
 
 public class RedisSessionImpl {
 }

@@ -9,4 +9,12 @@
     <version>1.0</version>
     <packaging>jar</packaging>
 
+    <dependencies>
+        <dependency>
+            <groupId>org.nalanta</groupId>
+            <artifactId>nalanta-boot</artifactId>
+            <version>1.0</version>
+        </dependency>
+    </dependencies>
+
 </project>

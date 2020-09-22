@@ -1,4 +1,7 @@
 package org.nalanta.crypto;
 
-public class Aes {
+public abstract class Aes {
+
+    private Aes() {}
+
 }

@@ -1,4 +1,7 @@
 package org.nalanta.crypto;
 
-public class Rsa {
+public abstract class Rsa {
+
+    private Rsa() {}
+
 }
