@@ -1,4 +1,4 @@
-package org.nalanta.core.constant;
+package org.nalanta.constant;
 
 public abstract class HttpStatusCode {
 

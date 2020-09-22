@@ -1,4 +1,4 @@
-package org.nalanta.core.json;
+package org.nalanta.json;
 
 import java.util.Map;
 

@@ -1,4 +1,4 @@
-package org.nalanta.core.http;
+package org.nalanta.http;
 
 public class SessionManager {
 }

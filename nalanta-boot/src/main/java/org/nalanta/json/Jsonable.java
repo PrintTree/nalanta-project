@@ -1,4 +1,4 @@
-package org.nalanta.core.json;
+package org.nalanta.json;
 
 public interface Jsonable<T> {
 
