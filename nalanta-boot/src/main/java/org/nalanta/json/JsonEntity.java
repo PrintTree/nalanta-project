@@ -8,8 +8,7 @@ public interface JsonEntity {
     enum Type {
         OBJECT,
         ARRAY,
-        INTEGER,
-        DOUBLE,
+        Number,
         STRING,
         BOOLEAN
     }
