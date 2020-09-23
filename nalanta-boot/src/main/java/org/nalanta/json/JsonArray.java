@@ -1,27 +1,22 @@
 package org.nalanta.json;
 
-import java.util.List;
+import static org.nalanta.json.JsonEntity.Type.ARRAY;
 
-public class JsonArray {
+public interface JsonArray extends JsonEntity {
 
-    public JsonArray from(String jsonString) {
-        return this;
-    }
-
-    public JsonArray from(List<Object> jsonList) {
-        return this;
-    }
-
-    public String stringify() {
+    static JsonArray from(String jsonString) {
         return null;
     }
 
-    public String string(int index) {
-        return null;
+    static JsonArray create() {
+        return new StandardJsonArray();
     }
 
-    public JsonArray string(int index, String value) {
-        return this;
+    @Override
+    default Type type() {
+        return ARRAY;
     }
+
+    JsonObject freeze();
 
 }

@@ -14,5 +14,9 @@ public abstract class Common {
 
     public static final int MIN_INT = Integer.MIN_VALUE;
 
+    public static final String TRUE = "true";
+
+    public static final String FALSE = "false";
+
     private Common() {}
 }
