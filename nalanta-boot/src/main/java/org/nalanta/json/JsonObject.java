@@ -1,5 +1,7 @@
 package org.nalanta.json;
 
+import static org.nalanta.json.JsonEntity.Type.OBJECT;
+
 public interface JsonObject extends JsonEntity {
 
     static JsonObject from(String jsonString) {
@@ -7,10 +9,19 @@ public interface JsonObject extends JsonEntity {
     }
 
     static JsonObject create() {
-        return null;
+        return new StandardJsonObject();
+    }
+
+    @Override
+    default Type type() {
+        return OBJECT;
     }
 
     JsonObject freeze();
+
+    default JsonObject share() {
+        return null;
+    }
 
     JsonObject getJsonObject(String key);
 
@@ -26,15 +37,36 @@ public interface JsonObject extends JsonEntity {
 
     String getString(String key);
 
-    Long getNumberAsLong(String key);
+    Long getLong(String key);
 
-    Integer getNumberAsInteger(String key);
+    Integer getInteger(String key);
 
-    Short getNumberAsShort(String key);
+    Double getDouble(String key);
 
-    Byte getNumberAsByte(String key);
+    Float getFloat(String key);
 
-    Double getNumberAsDouble(String key);
+    JsonObject putJsonObject(String key, JsonObject value);
 
-    Float getNumberAsFloat(String key);
+    JsonObject putJsonArray(String key, JsonArray value);
+
+    JsonObject putJsonBoolean(String key, JsonBoolean value);
+
+    JsonObject putJsonNumber(String key, JsonNumber value);
+
+    JsonObject putJsonString(String key, JsonString value);
+
+    JsonObject putBoolean(String key, Boolean value);
+
+    JsonObject putNumber(String key, Number value);
+
+    JsonObject putNumber(String key, Integer value);
+
+    JsonObject putNumber(String key, Long value);
+
+    JsonObject putNumber(String key, Double value);
+
+    JsonObject putNumber(String key, Float value);
+
+    JsonObject putString(String key, String value);
+
 }

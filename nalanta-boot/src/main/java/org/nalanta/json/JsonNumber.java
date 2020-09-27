@@ -2,13 +2,10 @@ package org.nalanta.json;
 
 public class JsonNumber implements JsonEntity {
 
-    private final String internal;
+    private final Number internal;
 
-    private final boolean isInteger;
-
-    public JsonNumber(String d) {
+    public JsonNumber(Number d) {
         internal = d;
-        isInteger = !d.contains(".");
     }
 
     @Override
@@ -23,7 +20,24 @@ public class JsonNumber implements JsonEntity {
 
     @Override
     public String stringify() {
-        return internal;
+        //TODO
+        return internal.toString();
+    }
+
+    Long internalLong() {
+        return internal.longValue();
+    }
+
+    Integer internalInteger() {
+        return internal.intValue();
+    }
+
+    Double internalDouble() {
+        return internal.doubleValue();
+    }
+
+    Float internalFloat() {
+        return internal.floatValue();
     }
 
 }

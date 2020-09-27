@@ -22,4 +22,8 @@ public class JsonString implements JsonEntity {
     public String stringify() {
         return internal;
     }
+
+    String internalString() {
+        return internal;
+    }
 }

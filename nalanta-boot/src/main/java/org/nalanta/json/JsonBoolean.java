@@ -26,4 +26,8 @@ public class JsonBoolean implements JsonEntity {
     public String stringify() {
         return internal ? TRUE : FALSE;
     }
+
+    Boolean internalBoolean() {
+        return internal;
+    }
 }

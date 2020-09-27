@@ -19,4 +19,6 @@ public interface JsonArray extends JsonEntity {
 
     JsonObject freeze();
 
+    JsonObject share();
+
 }
