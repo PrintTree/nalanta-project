@@ -175,25 +175,25 @@ public abstract class AbstractJsonObject implements JsonObject {
     }
 
     @Override
-    public JsonObject putNumber(String key, Integer value) {
+    public JsonObject putInteger(String key, Integer value) {
         internal.put(key, new JsonNumber(value));
         return this;
     }
 
     @Override
-    public JsonObject putNumber(String key, Long value) {
+    public JsonObject putLong(String key, Long value) {
         internal.put(key, new JsonNumber(value));
         return this;
     }
 
     @Override
-    public JsonObject putNumber(String key, Double value) {
+    public JsonObject putDouble(String key, Double value) {
         internal.put(key, new JsonNumber(value));
         return this;
     }
 
     @Override
-    public JsonObject putNumber(String key, Float value) {
+    public JsonObject putFloat(String key, Float value) {
         internal.put(key, new JsonNumber(value));
         return this;
     }

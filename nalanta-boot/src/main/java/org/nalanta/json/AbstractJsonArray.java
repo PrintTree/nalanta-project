@@ -16,8 +16,9 @@ public abstract class AbstractJsonArray implements JsonArray {
         return internal.size();
     }
 
+    //TODO iterator
     @Override
     public Iterator<JsonEntity> iterator() {
-        return internal.iterator();
+        return null;
     }
 }

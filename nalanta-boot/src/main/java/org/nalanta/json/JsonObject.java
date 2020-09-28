@@ -12,7 +12,6 @@ public interface JsonObject extends JsonEntity {
             e.printStackTrace();
             return null;
         }
-
     }
 
     static JsonObject create() {
@@ -24,10 +23,12 @@ public interface JsonObject extends JsonEntity {
         return OBJECT;
     }
 
-    JsonObject freeze();
+    default JsonObject freeze() {
+        return JsonObject.create().freeze();
+    }
 
     default JsonObject share() {
-        return null;
+        return JsonObject.create().share();
     }
 
     Object get(String key);
@@ -74,13 +75,13 @@ public interface JsonObject extends JsonEntity {
 
     JsonObject putNumber(String key, Number value);
 
-    JsonObject putNumber(String key, Integer value);
+    JsonObject putInteger(String key, Integer value);
 
-    JsonObject putNumber(String key, Long value);
+    JsonObject putLong(String key, Long value);
 
-    JsonObject putNumber(String key, Double value);
+    JsonObject putDouble(String key, Double value);
 
-    JsonObject putNumber(String key, Float value);
+    JsonObject putFloat(String key, Float value);
 
     JsonObject putString(String key, String value);
 

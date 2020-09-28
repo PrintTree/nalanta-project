@@ -14,19 +14,6 @@ final class JsonUtil {
 
     private JsonUtil() {}
 
-    //private ObjectMapper objectMapper = new ObjectMapper();
-
-    static JsonObject freezeJsonObject(JsonObject resource) {
-
-        return null;
-    }
-
-    static JsonArray freezeJsonArray(JsonArray resource) {
-        return null;
-    }
-
-
-
     static ObjectMapper objectMapper = new ObjectMapper();
     static String testJsonString = "{\"name\":\"Alice\",\"role\":\"user\",\"code\":2.75,\"dept\":{\"name\":\"FBI\"}}";
     static {
