@@ -5,7 +5,14 @@ import static org.nalanta.json.JsonEntity.Type.OBJECT;
 public interface JsonObject extends JsonEntity {
 
     static JsonObject from(String jsonString) {
-        return null;
+        try {
+            return (JsonObject) JsonUtil.objectMapper.readValue(jsonString, JsonEntity.class);
+        } catch (Exception e) {
+            //TODO config logger
+            e.printStackTrace();
+            return null;
+        }
+
     }
 
     static JsonObject create() {
@@ -22,6 +29,10 @@ public interface JsonObject extends JsonEntity {
     default JsonObject share() {
         return null;
     }
+
+    Object get(String key);
+
+    JsonEntity getJsonEntity(String key);
 
     JsonObject getJsonObject(String key);
 
@@ -44,6 +55,10 @@ public interface JsonObject extends JsonEntity {
     Double getDouble(String key);
 
     Float getFloat(String key);
+
+    JsonObject put(String key, Object value);
+
+    JsonObject putJsonEntity(String key, JsonEntity value);
 
     JsonObject putJsonObject(String key, JsonObject value);
 

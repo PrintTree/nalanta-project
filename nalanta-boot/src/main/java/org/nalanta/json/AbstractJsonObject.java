@@ -11,6 +11,46 @@ public abstract class AbstractJsonObject implements JsonObject {
     }
 
     @Override
+    public Object get(String key) {
+        JsonEntity value = internal.get(key);
+        switch (value.type()) {
+            case OBJECT:
+            case ARRAY:
+                return value;
+            case BOOLEAN:
+                return ((JsonBoolean) value).internalBoolean();
+            case STRING:
+                return ((JsonString) value).internalString();
+            case Number:
+                JsonNumber jsonNumber = (JsonNumber) value;
+                Class<? extends Number> numberType = jsonNumber.getNumberType();
+                if(Byte.class.isAssignableFrom(numberType) ||
+                   Short.class.isAssignableFrom(numberType) ||
+                   Integer.class.isAssignableFrom(numberType)) {
+                    return jsonNumber.internalInteger();
+                }
+                if(Long.class.isAssignableFrom(numberType)) {
+                    return jsonNumber.internalLong();
+                }
+                if(Float.class.isAssignableFrom(numberType)) {
+                    return jsonNumber.internalFloat();
+                }
+                if(Double.class.isAssignableFrom(numberType)) {
+                    return jsonNumber.internalDouble();
+                }
+                //TODO other supported types
+                return Double.NaN;
+            default:
+                return null;
+        }
+    }
+
+    @Override
+    public JsonEntity getJsonEntity(String key) {
+        return internal.get(key);
+    }
+
+    @Override
     public JsonObject getJsonObject(String key) {
         return (JsonObject) internal.get(key);
     }
@@ -63,6 +103,33 @@ public abstract class AbstractJsonObject implements JsonObject {
     @Override
     public Float getFloat(String key) {
         return ((JsonNumber) internal.get(key)).internalFloat();
+    }
+
+    @Override
+    public JsonObject put(String key, Object value) {
+        if(value instanceof JsonEntity) {
+            internal.put(key, (JsonEntity) value);
+        }
+        else if(value instanceof Number) {
+            internal.put(key, new JsonNumber((Number) value));
+        }
+        else if(value instanceof String) {
+            internal.put(key, new JsonString((String) value));
+        }
+        else if(value instanceof Boolean) {
+            internal.put(key, new JsonBoolean((Boolean) value));
+        }
+        else if(value == null) {
+            internal.put(key, new JsonNull());
+        }
+        //TODO else parse POJO/Map as JsonObject, array/List as JsonArray
+        return this;
+    }
+
+    @Override
+    public JsonObject putJsonEntity(String key, JsonEntity value) {
+        internal.put(key, value);
+        return this;
     }
 
     @Override

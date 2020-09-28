@@ -1,11 +1,11 @@
 package org.nalanta.json;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 class StandardJsonObject extends AbstractJsonObject {
 
     StandardJsonObject() {
-        super(new HashMap<>(8));
+        super(new LinkedHashMap<>(8));
     }
 
     @Override

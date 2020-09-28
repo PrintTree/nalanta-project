@@ -40,4 +40,8 @@ public class JsonNumber implements JsonEntity {
         return internal.floatValue();
     }
 
+    public Class<? extends Number> getNumberType() {
+        return internal.getClass();
+    }
+
 }

@@ -10,7 +10,8 @@ public interface JsonEntity {
         ARRAY,
         Number,
         STRING,
-        BOOLEAN
+        BOOLEAN,
+        NULL
     }
 
     boolean isImmutable();

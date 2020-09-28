@@ -20,7 +20,7 @@ public class JsonString implements JsonEntity {
 
     @Override
     public String stringify() {
-        return internal;
+        return "\"" + internal + "\"";
     }
 
     String internalString() {
