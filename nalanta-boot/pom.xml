@@ -24,7 +24,7 @@
 
     <dependencies>
 
-        <!-- jackson库，引入databind后自动引入core和annotations -->
+        <!-- jackson -->
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
