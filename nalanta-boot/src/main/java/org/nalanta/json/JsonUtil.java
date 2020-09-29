@@ -15,7 +15,7 @@ final class JsonUtil {
     private JsonUtil() {}
 
     static ObjectMapper objectMapper = new ObjectMapper();
-    static String testJsonString = "{\"name\":\"Alice\",\"role\":\"user\",\"code\":2.75,\"dept\":{\"name\":\"FBI\"}}";
+    static String testJsonString = "{\"name\":\"Alice\",\"code\":2.75,\"dept\":{},\"attr\":[\"u1\",{\"k\":\"v\"},true,3]}";
     static {
         SimpleModule module = new SimpleModule();
         module.addDeserializer(JsonEntity.class, new JsonEntityDeserializer());
@@ -23,12 +23,36 @@ final class JsonUtil {
     }
 
     public static void main(String[] args) throws Exception {
-        //JsonObject jsonObject = (JsonObject) objectMapper.readValue(testJsonString, JsonEntity.class);
-        //System.out.println(jsonObject);
-        JsonEntity jsonEntity = objectMapper.readValue(testJsonString, JsonEntity.class);
-        System.out.println(jsonEntity);
+
+        //JsonEntity jsonEntity = objectMapper.readValue(testJsonString, JsonEntity.class);
+        //System.out.println(jsonEntity.stringify());
+
+        long t1 = System.currentTimeMillis();
+        for(int i = 0; i < 100000; i++) {
+            JsonObject jsonObject = JsonObject.from(testJsonString);
+            jsonObject.stringify();
+        }
+        System.out.println(System.currentTimeMillis() - t1);
+        //JsonObject jsonObject = JsonObject.from(testJsonString);
+        //System.out.println(jsonObject.stringify());
     }
 
+    static JsonObject parseObject(String jsonString) {
+        return (JsonObject) parseEntity(jsonString);
+    }
+
+    static JsonArray parseArray(String jsonString) {
+        return (JsonArray) parseEntity(jsonString);
+    }
+
+    static JsonEntity parseEntity(String jsonString) {
+        try {
+            return objectMapper.readValue(jsonString, JsonEntity.class);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
 
     static class JsonEntityDeserializer extends JsonDeserializer<JsonEntity> {
 
@@ -46,6 +70,7 @@ final class JsonUtil {
                 case VALUE_STRING:
                     jsonEntity = parseJsonString(p, ctxt);
                     break;
+                case VALUE_NUMBER_INT:
                 case VALUE_NUMBER_FLOAT:
                     jsonEntity = parseJsonNumber(p, ctxt);
                     break;
@@ -54,7 +79,8 @@ final class JsonUtil {
                     jsonEntity = parseJsonBoolean(p, ctxt);
                     break;
                 case VALUE_NULL:
-                    jsonEntity = null;
+                    jsonEntity = parseJsonNull(p, ctxt);
+                    break;
                 default:
                     throw new IllegalStateException("unsupported json token: " + currentToken);
             }
@@ -63,26 +89,14 @@ final class JsonUtil {
 
         private JsonObject parseJsonObject(JsonParser p, DeserializationContext ctxt) throws IOException {
             JsonObject jsonObject = new StandardJsonObject();
-            for(String key = p.nextFieldName(); key != null; key = p.nextFieldName()) {
+            JsonToken jsonToken = p.nextToken();
+            if(jsonToken == JsonToken.END_OBJECT) {
+                return jsonObject;
+            }
+            String key = p.getCurrentName();
+            for(; key != null; key = p.nextFieldName()) {
                 p.nextToken();
-                JsonEntity jsonEntity = deserialize(p, ctxt);
-                switch (jsonEntity.type()) {
-                    case OBJECT:
-                        jsonObject.putJsonObject(key, (JsonObject) jsonEntity);
-                        break;
-                    case ARRAY:
-                        jsonObject.putJsonArray(key, (JsonArray) jsonEntity);
-                        break;
-                    case BOOLEAN:
-                        jsonObject.putJsonBoolean(key, (JsonBoolean) jsonEntity);
-                        break;
-                    case STRING:
-                        jsonObject.putJsonString(key, (JsonString) jsonEntity);
-                        break;
-                    case Number:
-                        jsonObject.putJsonNumber(key, (JsonNumber) jsonEntity);
-                    default:
-                }
+                jsonObject.put(key, deserialize(p, ctxt));
             }
             return jsonObject;
         }
@@ -94,10 +108,9 @@ final class JsonUtil {
                 return jsonArray;
             }
             do {
-                JsonEntity jsonEntity = deserialize(p, ctxt);
+                jsonArray.add(deserialize(p, ctxt));
             } while (p.nextToken() != JsonToken.END_ARRAY);
             return jsonArray;
-            //TODO add element
         }
 
         private JsonString parseJsonString(JsonParser p, DeserializationContext ctxt) throws IOException {
@@ -118,6 +131,10 @@ final class JsonUtil {
 
         private JsonBoolean parseJsonBoolean(JsonParser p, DeserializationContext ctxt) throws IOException {
             return new JsonBoolean(p.getValueAsBoolean());
+        }
+
+        private JsonNull parseJsonNull(JsonParser p, DeserializationContext ctxt) throws IOException {
+            return new JsonNull();
         }
     }
 

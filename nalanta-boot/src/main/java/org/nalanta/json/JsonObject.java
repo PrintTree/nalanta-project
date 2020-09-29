@@ -5,13 +5,7 @@ import static org.nalanta.json.JsonEntity.Type.OBJECT;
 public interface JsonObject extends JsonEntity {
 
     static JsonObject from(String jsonString) {
-        try {
-            return (JsonObject) JsonUtil.objectMapper.readValue(jsonString, JsonEntity.class);
-        } catch (Exception e) {
-            //TODO config logger
-            e.printStackTrace();
-            return null;
-        }
+        return JsonUtil.parseObject(jsonString);
     }
 
     static JsonObject create() {
@@ -59,30 +53,12 @@ public interface JsonObject extends JsonEntity {
 
     JsonObject put(String key, Object value);
 
-    JsonObject putJsonEntity(String key, JsonEntity value);
+    JsonObject put(String key, JsonEntity value);
 
-    JsonObject putJsonObject(String key, JsonObject value);
+    JsonObject put(String key, Boolean value);
 
-    JsonObject putJsonArray(String key, JsonArray value);
+    JsonObject put(String key, Number value);
 
-    JsonObject putJsonBoolean(String key, JsonBoolean value);
-
-    JsonObject putJsonNumber(String key, JsonNumber value);
-
-    JsonObject putJsonString(String key, JsonString value);
-
-    JsonObject putBoolean(String key, Boolean value);
-
-    JsonObject putNumber(String key, Number value);
-
-    JsonObject putInteger(String key, Integer value);
-
-    JsonObject putLong(String key, Long value);
-
-    JsonObject putDouble(String key, Double value);
-
-    JsonObject putFloat(String key, Float value);
-
-    JsonObject putString(String key, String value);
+    JsonObject put(String key, String value);
 
 }

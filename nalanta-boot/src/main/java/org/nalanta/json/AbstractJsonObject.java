@@ -24,9 +24,9 @@ public abstract class AbstractJsonObject implements JsonObject {
             case Number:
                 JsonNumber jsonNumber = (JsonNumber) value;
                 Class<? extends Number> numberType = jsonNumber.getNumberType();
-                if(Byte.class.isAssignableFrom(numberType) ||
+                if(Integer.class.isAssignableFrom(numberType)  ||
                    Short.class.isAssignableFrom(numberType) ||
-                   Integer.class.isAssignableFrom(numberType)) {
+                   Byte.class.isAssignableFrom(numberType)) {
                     return jsonNumber.internalInteger();
                 }
                 if(Long.class.isAssignableFrom(numberType)) {
@@ -127,79 +127,25 @@ public abstract class AbstractJsonObject implements JsonObject {
     }
 
     @Override
-    public JsonObject putJsonEntity(String key, JsonEntity value) {
+    public JsonObject put(String key, JsonEntity value) {
         internal.put(key, value);
         return this;
     }
 
     @Override
-    public JsonObject putJsonObject(String key, JsonObject value) {
-        internal.put(key, value);
-        return this;
-    }
-
-    @Override
-    public JsonObject putJsonArray(String key, JsonArray value) {
-        internal.put(key, value);
-        return this;
-    }
-
-    @Override
-    public JsonObject putJsonBoolean(String key, JsonBoolean value) {
-        internal.put(key, value);
-        return this;
-    }
-
-    @Override
-    public JsonObject putJsonNumber(String key, JsonNumber value) {
-        internal.put(key, value);
-        return this;
-    }
-
-    @Override
-    public JsonObject putJsonString(String key, JsonString value) {
-        internal.put(key, value);
-        return this;
-    }
-
-    @Override
-    public JsonObject putBoolean(String key, Boolean value) {
+    public JsonObject put(String key, Boolean value) {
         internal.put(key, new JsonBoolean(value));
         return this;
     }
 
     @Override
-    public JsonObject putNumber(String key, Number value) {
+    public JsonObject put(String key, Number value) {
         internal.put(key, new JsonNumber(value));
         return this;
     }
 
     @Override
-    public JsonObject putInteger(String key, Integer value) {
-        internal.put(key, new JsonNumber(value));
-        return this;
-    }
-
-    @Override
-    public JsonObject putLong(String key, Long value) {
-        internal.put(key, new JsonNumber(value));
-        return this;
-    }
-
-    @Override
-    public JsonObject putDouble(String key, Double value) {
-        internal.put(key, new JsonNumber(value));
-        return this;
-    }
-
-    @Override
-    public JsonObject putFloat(String key, Float value) {
-        internal.put(key, new JsonNumber(value));
-        return this;
-    }
-
-    @Override
-    public JsonObject putString(String key, String value) {
+    public JsonObject put(String key, String value) {
         internal.put(key, new JsonString(value));
         return this;
     }

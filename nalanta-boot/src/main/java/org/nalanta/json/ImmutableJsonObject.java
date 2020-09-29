@@ -20,7 +20,10 @@ class ImmutableJsonObject extends AbstractJsonObject {
             JsonEntity value = entry.getValue();
             sb.append('"').append(key).append('"').append(':').append(value.stringify()).append(',');
         }
-        stringifyCache = sb.deleteCharAt(sb.length() - 1).append('}').toString();
+        if(sb.length() > 1) {
+            sb.deleteCharAt(sb.length() - 1);
+        }
+        stringifyCache = sb.append('}').toString();
     }
 
     @Override
@@ -48,67 +51,22 @@ class ImmutableJsonObject extends AbstractJsonObject {
     }
 
     @Override
-    public JsonObject putJsonEntity(String key, JsonEntity value) {
+    public JsonObject put(String key, JsonEntity value) {
         return this;
     }
 
     @Override
-    public JsonObject putJsonObject(String key, JsonObject value) {
+    public JsonObject put(String key, Boolean value) {
         return this;
     }
 
     @Override
-    public JsonObject putJsonArray(String key, JsonArray value) {
+    public JsonObject put(String key, Number value) {
         return this;
     }
 
     @Override
-    public JsonObject putJsonBoolean(String key, JsonBoolean value) {
-        return this;
-    }
-
-    @Override
-    public JsonObject putJsonNumber(String key, JsonNumber value) {
-        return this;
-    }
-
-    @Override
-    public JsonObject putJsonString(String key, JsonString value) {
-        return this;
-    }
-
-    @Override
-    public JsonObject putBoolean(String key, Boolean value) {
-        return this;
-    }
-
-    @Override
-    public JsonObject putNumber(String key, Number value) {
-        return this;
-    }
-
-    @Override
-    public JsonObject putInteger(String key, Integer value) {
-        return this;
-    }
-
-    @Override
-    public JsonObject putLong(String key, Long value) {
-        return this;
-    }
-
-    @Override
-    public JsonObject putDouble(String key, Double value) {
-        return this;
-    }
-
-    @Override
-    public JsonObject putFloat(String key, Float value) {
-        return this;
-    }
-
-    @Override
-    public JsonObject putString(String key, String value) {
+    public JsonObject put(String key, String value) {
         return this;
     }
 

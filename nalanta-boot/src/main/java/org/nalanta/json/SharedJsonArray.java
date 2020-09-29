@@ -1,23 +1,36 @@
 package org.nalanta.json;
 
-class SharedJsonArray implements JsonArray {
+import java.util.Iterator;
+import java.util.List;
+
+class SharedJsonArray extends AbstractJsonArray {
+
+    SharedJsonArray(List<JsonEntity> list) {
+        super(list);
+    }
+
     @Override
-    public JsonObject freeze() {
+    public synchronized JsonArray freeze() {
         return null;
     }
 
     @Override
-    public JsonObject share() {
+    public synchronized JsonArray share() {
         return null;
     }
 
     @Override
-    public boolean isImmutable() {
+    public synchronized boolean isImmutable() {
         return false;
     }
 
     @Override
-    public String stringify() {
+    public synchronized String stringify() {
+        return null;
+    }
+
+    @Override
+    public synchronized Iterator<JsonEntity> iterator() {
         return null;
     }
 }

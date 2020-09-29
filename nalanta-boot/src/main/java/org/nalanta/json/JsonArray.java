@@ -5,7 +5,7 @@ import static org.nalanta.json.JsonEntity.Type.ARRAY;
 public interface JsonArray extends JsonEntity, Iterable<JsonEntity> {
 
     static JsonArray from(String jsonString) {
-        return null;
+        return JsonUtil.parseArray(jsonString);
     }
 
     static JsonArray create() {
@@ -17,39 +17,21 @@ public interface JsonArray extends JsonEntity, Iterable<JsonEntity> {
         return ARRAY;
     }
 
-    JsonObject freeze();
+    JsonArray freeze();
 
-    JsonObject share();
+    JsonArray share();
 
     int size();
 
     JsonArray add(Object element);
 
-    JsonArray addJsonEntity(JsonEntity element);
+    JsonArray add(JsonEntity element);
 
-    JsonArray addJsonObject(JsonObject element);
+    JsonArray add(String element);
 
-    JsonArray addJsonArray(JsonArray element);
+    JsonArray add(Number element);
 
-    JsonArray addJsonString(JsonString element);
-
-    JsonArray addJsonNumber(JsonNumber element);
-
-    JsonArray addJsonBoolean(JsonBoolean element);
-
-    JsonArray addString(String element);
-
-    JsonArray addNumber(Number element);
-
-    JsonArray addInteger(Integer element);
-
-    JsonArray addLong(Long element);
-
-    JsonArray addFloat(Float element);
-
-    JsonArray addDouble(Double element);
-
-    JsonArray addBoolean(Boolean element);
+    JsonArray add(Boolean element);
 
     Object get(int index);
 

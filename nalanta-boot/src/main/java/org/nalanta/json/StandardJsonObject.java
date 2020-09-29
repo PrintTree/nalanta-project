@@ -57,15 +57,17 @@ class StandardJsonObject extends AbstractJsonObject {
 
     @Override
     public String stringify() {
-        StringBuilder sb = new StringBuilder()
-                .append('{');
+        StringBuilder sb = new StringBuilder().append('{');
         Set<Map.Entry<String, JsonEntity>> entrySet = internal.entrySet();
         for(Map.Entry<String, JsonEntity> entry : entrySet) {
             String key = entry.getKey();
             JsonEntity value = entry.getValue();
             sb.append('"').append(key).append('"').append(':').append(value.stringify()).append(',');
         }
-        return sb.deleteCharAt(sb.length() - 1).append('}').toString();
+        if(sb.length() > 1) {
+            sb.deleteCharAt(sb.length() - 1);
+        }
+        return sb.append('}').toString();
     }
 
 }

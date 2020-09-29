@@ -24,19 +24,35 @@ public class JsonNumber implements JsonEntity {
         return internal.toString();
     }
 
+    Number internalNumber() {
+        return internal;
+    }
+
     Long internalLong() {
+        if(internal instanceof Long) {
+            return (Long) internal;
+        }
         return internal.longValue();
     }
 
     Integer internalInteger() {
+        if(internal instanceof Integer) {
+            return (Integer) internal;
+        }
         return internal.intValue();
     }
 
     Double internalDouble() {
+        if(internal instanceof Double) {
+            return (Double) internal;
+        }
         return internal.doubleValue();
     }
 
     Float internalFloat() {
+        if(internal instanceof Float) {
+            return (Float) internal;
+        }
         return internal.floatValue();
     }
 

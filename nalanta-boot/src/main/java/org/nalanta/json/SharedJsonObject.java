@@ -42,15 +42,17 @@ class SharedJsonObject extends AbstractJsonObject {
 
     @Override
     public synchronized String stringify() {
-        StringBuilder sb = new StringBuilder()
-                .append('{');
+        StringBuilder sb = new StringBuilder().append('{');
         Set<Map.Entry<String, JsonEntity>> entrySet = internal.entrySet();
         for(Map.Entry<String, JsonEntity> entry : entrySet) {
             String key = entry.getKey();
             JsonEntity value = entry.getValue();
             sb.append('"').append(key).append('"').append(':').append(value.stringify()).append(',');
         }
-        return sb.deleteCharAt(sb.length() - 1).append('}').toString();
+        if(sb.length() > 1) {
+            sb.deleteCharAt(sb.length() - 1);
+        }
+        return sb.append('}').toString();
     }
 
     @Override
@@ -124,67 +126,22 @@ class SharedJsonObject extends AbstractJsonObject {
     }
 
     @Override
-    public synchronized JsonObject putJsonEntity(String key, JsonEntity value) {
-        return super.putJsonEntity(key, value);
+    public synchronized JsonObject put(String key, JsonEntity value) {
+        return super.put(key, value);
     }
 
     @Override
-    public synchronized JsonObject putJsonObject(String key, JsonObject value) {
-        return super.putJsonObject(key, value);
+    public synchronized JsonObject put(String key, Boolean value) {
+        return super.put(key, value);
     }
 
     @Override
-    public synchronized JsonObject putJsonArray(String key, JsonArray value) {
-        return super.putJsonArray(key, value);
+    public synchronized JsonObject put(String key, Number value) {
+        return super.put(key, value);
     }
 
     @Override
-    public synchronized JsonObject putJsonBoolean(String key, JsonBoolean value) {
-        return super.putJsonBoolean(key, value);
-    }
-
-    @Override
-    public synchronized JsonObject putJsonNumber(String key, JsonNumber value) {
-        return super.putJsonNumber(key, value);
-    }
-
-    @Override
-    public synchronized JsonObject putJsonString(String key, JsonString value) {
-        return super.putJsonString(key, value);
-    }
-
-    @Override
-    public synchronized JsonObject putBoolean(String key, Boolean value) {
-        return super.putBoolean(key, value);
-    }
-
-    @Override
-    public synchronized JsonObject putNumber(String key, Number value) {
-        return super.putNumber(key, value);
-    }
-
-    @Override
-    public synchronized JsonObject putInteger(String key, Integer value) {
-        return super.putInteger(key, value);
-    }
-
-    @Override
-    public synchronized JsonObject putLong(String key, Long value) {
-        return super.putLong(key, value);
-    }
-
-    @Override
-    public synchronized JsonObject putDouble(String key, Double value) {
-        return super.putDouble(key, value);
-    }
-
-    @Override
-    public synchronized JsonObject putFloat(String key, Float value) {
-        return super.putFloat(key, value);
-    }
-
-    @Override
-    public synchronized JsonObject putString(String key, String value) {
-        return super.putString(key, value);
+    public synchronized JsonObject put(String key, String value) {
+        return super.put(key, value);
     }
 }
