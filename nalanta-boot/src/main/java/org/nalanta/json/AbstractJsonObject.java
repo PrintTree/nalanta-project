@@ -1,6 +1,8 @@
 package org.nalanta.json;
 
+import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Set;
 
 public abstract class AbstractJsonObject implements JsonObject {
 
@@ -8,6 +10,81 @@ public abstract class AbstractJsonObject implements JsonObject {
 
     AbstractJsonObject(Map<String, JsonEntity> map) {
         internal = map;
+    }
+
+    @Override
+    public JsonObject copy() {
+        StandardJsonObject newJsonObject = new StandardJsonObject();
+        Set<Map.Entry<String, JsonEntity>> entrySet = internal.entrySet();
+        for(Map.Entry<String, JsonEntity> entry : entrySet) {
+            String key = entry.getKey();
+            JsonEntity value = entry.getValue();
+            if(value instanceof JsonObject) {
+                newJsonObject.put(key, ((JsonObject) value).copy());
+            }
+            else if(value instanceof JsonArray) {
+                newJsonObject.put(key, ((JsonArray) value).copy());
+            }
+            else {
+                newJsonObject.put(key, value);
+            }
+        }
+        return newJsonObject;
+    }
+
+    @Override
+    public JsonObject freeze() {
+        LinkedHashMap<String, JsonEntity> copiedMap = new LinkedHashMap<>(8);
+        Set<Map.Entry<String, JsonEntity>> entrySet = internal.entrySet();
+        for(Map.Entry<String, JsonEntity> entry : entrySet) {
+            String key = entry.getKey();
+            JsonEntity value = entry.getValue();
+            if(value instanceof JsonObject) {
+                copiedMap.put(key, ((JsonObject) value).freeze());
+            }
+            else if(value instanceof JsonArray) {
+                copiedMap.put(key, ((JsonArray) value).freeze());
+            }
+            else {
+                copiedMap.put(key, value);
+            }
+        }
+        return new ImmutableJsonObject(copiedMap);
+    }
+
+    @Override
+    public JsonObject share() {
+        LinkedHashMap<String, JsonEntity> copiedMap = new LinkedHashMap<>(8);
+        Set<Map.Entry<String, JsonEntity>> entrySet = internal.entrySet();
+        for(Map.Entry<String, JsonEntity> entry : entrySet) {
+            String key = entry.getKey();
+            JsonEntity value = entry.getValue();
+            if(value instanceof JsonObject) {
+                copiedMap.put(key, ((JsonObject) value).share());
+            }
+            else if(value instanceof JsonArray) {
+                copiedMap.put(key, ((JsonArray) value).share());
+            }
+            else {
+                copiedMap.put(key, value);
+            }
+        }
+        return new SharedJsonObject(copiedMap);
+    }
+
+    @Override
+    public String stringify() {
+        StringBuilder sb = new StringBuilder().append('{');
+        Set<Map.Entry<String, JsonEntity>> entrySet = internal.entrySet();
+        for(Map.Entry<String, JsonEntity> entry : entrySet) {
+            String key = entry.getKey();
+            JsonEntity value = entry.getValue();
+            sb.append('"').append(key).append('"').append(':').append(value.stringify()).append(',');
+        }
+        if(sb.length() > 1) {
+            sb.deleteCharAt(sb.length() - 1);
+        }
+        return sb.append('}').toString();
     }
 
     @Override
@@ -148,6 +225,28 @@ public abstract class AbstractJsonObject implements JsonObject {
     public JsonObject put(String key, String value) {
         internal.put(key, new JsonString(value));
         return this;
+    }
+
+    @Override
+    public JsonObject remove(String key) {
+        internal.remove(key);
+        return this;
+    }
+
+    @Override
+    public JsonEntity take(String key) {
+        return internal.remove(key);
+    }
+
+    @Override
+    public JsonObject clear() {
+        internal.clear();
+        return this;
+    }
+
+    @Override
+    public int size() {
+        return internal.size();
     }
 
 }

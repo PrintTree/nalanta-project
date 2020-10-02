@@ -23,7 +23,7 @@ public class JsonString implements JsonEntity {
         return "\"" + internal + "\"";
     }
 
-    String internalString() {
+    public String internalString() {
         return internal;
     }
 }

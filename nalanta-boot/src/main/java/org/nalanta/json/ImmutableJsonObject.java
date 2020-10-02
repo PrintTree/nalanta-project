@@ -1,7 +1,6 @@
 package org.nalanta.json;
 
 import java.util.Map;
-import java.util.Set;
 
 class ImmutableJsonObject extends AbstractJsonObject {
 
@@ -12,18 +11,7 @@ class ImmutableJsonObject extends AbstractJsonObject {
 
     ImmutableJsonObject(Map<String, JsonEntity> map) {
         super(map);
-        StringBuilder sb = new StringBuilder()
-                .append('{');
-        Set<Map.Entry<String, JsonEntity>> entrySet = internal.entrySet();
-        for(Map.Entry<String, JsonEntity> entry : entrySet) {
-            String key = entry.getKey();
-            JsonEntity value = entry.getValue();
-            sb.append('"').append(key).append('"').append(':').append(value.stringify()).append(',');
-        }
-        if(sb.length() > 1) {
-            sb.deleteCharAt(sb.length() - 1);
-        }
-        stringifyCache = sb.append('}').toString();
+        stringifyCache = super.stringify();
     }
 
     @Override
@@ -67,6 +55,21 @@ class ImmutableJsonObject extends AbstractJsonObject {
 
     @Override
     public JsonObject put(String key, String value) {
+        return this;
+    }
+
+    @Override
+    public JsonObject remove(String key) {
+        return this;
+    }
+
+    @Override
+    public JsonEntity take(String key) {
+        return getJsonEntity(key);
+    }
+
+    @Override
+    public JsonObject clear() {
         return this;
     }
 

@@ -17,6 +17,8 @@ public interface JsonObject extends JsonEntity {
         return OBJECT;
     }
 
+    JsonObject copy();
+
     default JsonObject freeze() {
         return JsonObject.create().freeze();
     }
@@ -60,5 +62,13 @@ public interface JsonObject extends JsonEntity {
     JsonObject put(String key, Number value);
 
     JsonObject put(String key, String value);
+
+    JsonObject remove(String key);
+
+    JsonEntity take(String key);
+
+    JsonObject clear();
+
+    int size();
 
 }

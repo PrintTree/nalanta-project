@@ -27,7 +27,7 @@ public class JsonBoolean implements JsonEntity {
         return internal ? TRUE : FALSE;
     }
 
-    Boolean internalBoolean() {
+    public Boolean internalBoolean() {
         return internal;
     }
 }

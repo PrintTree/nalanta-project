@@ -2,7 +2,7 @@ package org.nalanta.json;
 
 import static org.nalanta.json.JsonEntity.Type.ARRAY;
 
-public interface JsonArray extends JsonEntity, Iterable<JsonEntity> {
+public interface JsonArray extends JsonEntity {
 
     static JsonArray from(String jsonString) {
         return JsonUtil.parseArray(jsonString);
@@ -16,6 +16,8 @@ public interface JsonArray extends JsonEntity, Iterable<JsonEntity> {
     default Type type() {
         return ARRAY;
     }
+
+    JsonArray copy();
 
     JsonArray freeze();
 
@@ -32,6 +34,16 @@ public interface JsonArray extends JsonEntity, Iterable<JsonEntity> {
     JsonArray add(Number element);
 
     JsonArray add(Boolean element);
+
+    JsonArray set(int index, Object element);
+
+    JsonArray set(int index, JsonEntity element);
+
+    JsonArray set(int index, String element);
+
+    JsonArray set(int index, Number element);
+
+    JsonArray set(int index, Boolean element);
 
     Object get(int index);
 
@@ -60,5 +72,11 @@ public interface JsonArray extends JsonEntity, Iterable<JsonEntity> {
     Double getDouble(int index);
 
     Boolean getBoolean(int index);
+
+    JsonArray remove(int index);
+
+    JsonEntity take(int index);
+
+    JsonArray clear();
 
 }
