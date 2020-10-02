@@ -1,6 +1,6 @@
 package org.nalanta.session;
 
-import org.nalanta.json.JsonObject;
+import org.nalanta.json.JsonEntity;
 
 public interface Session {
 
@@ -10,43 +10,52 @@ public interface Session {
     String id();
 
     /**
+     * destroy this session
+     * @return session id
+     */
+    String destroy();
+
+    /**
+     * get this session's expire time
+     * @return
+     */
+    long expireTime();
+
+    /**
      * get a modifiable string attribute
      * @param key attribute key
      * @return attribute value0
      */
-    String attribute(String key);
+    String getAttribute(String key);
 
     /**
-     * get or remove a modifiable string attribute
+     * get a modifiable string attribute
      * @param key attribute key
-     * @param remove remove if true, otherwise get only
+     * @param value attribute value
      * @return attribute value
      */
-    String attribute(String key, boolean remove);
+    String setAttribute(String key, String value);
 
     /**
      * set a modifiable string attribute
      * @param key attribute key
-     * @param value attribute value
-     * @return session object
+     * @return attribute value
      */
-    Session attribute(String key, String value);
+    String removeAttribute(String key);
 
     /**
-     * get an immutable JsonObject attachment
+     * get an immutable JsonEntity attachment
      * @param key attachment key
-     * @return attachment JsonObject
+     * @return attachment JsonEntity
      */
-    JsonObject attachment(String key);
+    JsonEntity getAttachment(String key);
 
     /**
-     * set an immutable JsonObject attachment
+     * set an immutable JsonEntity attachment.
+     * If there is already exists an attachment, return null.
      * @param key attachment key
-     * @param attachment attachment JsonObject
-     * @return session object
+     * @param attachment attachment JsonEntity
+     * @return attachment JsonEntity or null
      */
-    Session attachment(String key, JsonObject attachment);
-
-
-
+    JsonEntity setAttachment(String key, JsonEntity attachment);
 }
