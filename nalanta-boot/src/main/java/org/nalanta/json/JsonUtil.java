@@ -9,13 +9,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 
 import java.io.IOException;
+import java.util.Map;
 
 final class JsonUtil {
 
     private JsonUtil() {}
 
     static ObjectMapper objectMapper = new ObjectMapper();
-    static String testJsonString = "{\"name\":\"Alice\",\"code\":2.75,\"dept\":{},\"attr\":[\"u1\",{\"k\":\"v\"},true,3],\"test\":null}";
+    static String testJsonString = "{\"name\":\"Alice\",\"code\":2.75,\"dept\":{},\"attr\":[\"u1\",[1,2,3],[],{\"k\":\"v\"},true,3],\"test\":null}";
     static {
         SimpleModule module = new SimpleModule();
         module.addDeserializer(JsonEntity.class, new JsonEntityDeserializer());
@@ -24,17 +25,33 @@ final class JsonUtil {
 
     public static void main(String[] args) throws Exception {
 
-        //JsonEntity jsonEntity = objectMapper.readValue(testJsonString, JsonEntity.class);
-        //System.out.println(jsonEntity.stringify());
+        /*long t0 = System.currentTimeMillis();
+        for(int i = 0; i < 100000; i++) {
+            *//*JsonObject jsonObject = JsonObject.from(testJsonString);
+            jsonObject.stringify();*//*
+            Map map = objectMapper.readValue(testJsonString, Map.class);
+            //objectMapper.writeValueAsString(map);
+        }
+        System.out.println(System.currentTimeMillis() - t0);
+
+        long t3 = System.currentTimeMillis();
+        for(int i = 0; i < 100000; i++) {
+            Map map = objectMapper.readValue(testJsonString, Map.class);
+            //objectMapper.writeValueAsString(map);
+        }
+        System.out.println(System.currentTimeMillis() - t3);*/
 
         /*long t1 = System.currentTimeMillis();
         for(int i = 0; i < 100000; i++) {
             JsonObject jsonObject = JsonObject.from(testJsonString);
-            jsonObject.stringify();
+            //jsonObject.stringify();
         }
         System.out.println(System.currentTimeMillis() - t1);*/
-        JsonObject jsonObject = JsonObject.from(testJsonString);
-        System.out.println(jsonObject.stringify());
+
+
+        Map map = objectMapper.readValue(testJsonString, Map.class);
+        System.out.println(objectMapper.writeValueAsString(map));;
+
     }
 
     static JsonObject parseObject(String jsonString) {
