@@ -10,6 +10,7 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
 
 import java.io.IOException;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 final class JsonUtil {
 
@@ -25,32 +26,24 @@ final class JsonUtil {
 
     public static void main(String[] args) throws Exception {
 
-        /*long t0 = System.currentTimeMillis();
-        for(int i = 0; i < 100000; i++) {
-            *//*JsonObject jsonObject = JsonObject.from(testJsonString);
-            jsonObject.stringify();*//*
-            Map map = objectMapper.readValue(testJsonString, Map.class);
-            //objectMapper.writeValueAsString(map);
-        }
-        System.out.println(System.currentTimeMillis() - t0);
+        //JsonEntity jsonEntity = objectMapper.readValue(testJsonString, JsonEntity.class);
+        //System.out.println(jsonEntity.stringify());
 
-        long t3 = System.currentTimeMillis();
+        long t1 = System.currentTimeMillis();
+        for(int i = 0; i < 100000; i++) {
+            JsonObject jsonObject = JsonObject.from(testJsonString);
+            jsonObject.stringify();
+        }
+        System.out.println(System.currentTimeMillis() - t1);
+
+        /*long t3 = System.currentTimeMillis();
         for(int i = 0; i < 100000; i++) {
             Map map = objectMapper.readValue(testJsonString, Map.class);
-            //objectMapper.writeValueAsString(map);
+            objectMapper.writeValueAsString(map);
         }
         System.out.println(System.currentTimeMillis() - t3);*/
 
-        /*long t1 = System.currentTimeMillis();
-        for(int i = 0; i < 100000; i++) {
-            JsonObject jsonObject = JsonObject.from(testJsonString);
-            //jsonObject.stringify();
-        }
-        System.out.println(System.currentTimeMillis() - t1);*/
-
-
-        Map map = objectMapper.readValue(testJsonString, Map.class);
-        System.out.println(objectMapper.writeValueAsString(map));;
+        TimeUnit.SECONDS.sleep(600);
 
     }
 

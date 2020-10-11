@@ -1,7 +1,5 @@
 package org.nalanta.json;
 
-import static org.nalanta.constant.Common.TRUE_STRING;
-import static org.nalanta.constant.Common.FALSE_STRING;
 import static org.nalanta.json.JsonEntity.Type.BOOLEAN;
 
 public class JsonBoolean implements JsonEntity {
@@ -24,7 +22,7 @@ public class JsonBoolean implements JsonEntity {
 
     @Override
     public String stringify() {
-        return internal ? TRUE_STRING : FALSE_STRING;
+        return internal ? "true" : "false";
     }
 
     public Boolean internalBoolean() {
