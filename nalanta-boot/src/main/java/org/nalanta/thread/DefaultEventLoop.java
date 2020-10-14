@@ -3,6 +3,7 @@ package org.nalanta.thread;
 import java.util.UUID;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.LinkedTransferQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.LockSupport;
 
@@ -94,6 +95,6 @@ public class DefaultEventLoop<E> extends AbstractEventLoop<E> {
 
     @Override
     protected BlockingQueue<E> createTaskQueue() {
-        return new LinkedBlockingQueue<>();
+        return new LinkedTransferQueue<>();
     }
 }

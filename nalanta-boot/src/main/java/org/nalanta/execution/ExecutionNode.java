@@ -1,42 +1,34 @@
 package org.nalanta.execution;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.function.Consumer;
-
 public class ExecutionNode {
 
-    String name;
+    final String name;
 
-    Consumer<ExecutionContext> task;
+    final ExecutionTask task;
 
-    Map<String, ExecutionNode> nextNodes;
-
-    ExecutionNode(String name, Consumer<ExecutionContext> task) {
+    ExecutionNode(String name, ExecutionTask task) {
         this.name = name;
         this.task = task;
-        nextNodes = new HashMap<>(2);
-    }
-
-    void setNext(String nextName, ExecutionNode nextNode) {
-        nextNodes.put(nextName, nextNode);
-    }
-
-    boolean hasNext() {
-        return nextNodes.isEmpty();
-    }
-
-    ExecutionNode next(String nodeName) {
-        return nextNodes.get(nodeName);
     }
 
     void execute(ExecutionContext context) {
         try {
-            task.accept(context);
+            task.execute(context);
+        }
+        catch (ExecutionInterruptedSignal executionInterruptedSignal) {
+            context.nextNode();
+            return;
         }
         catch (Throwable throwable) {
-            context.exception = throwable;
-            context.state.set(ExecutionContext.ERROR);
+            context.unexpectedException();
+            return;
         }
+        throw new IllegalStateException(context.snapshot() + ": lose control, please invoke end or wait method");
     }
+
+    @Override
+    public String toString() {
+        return name;
+    }
+
 }

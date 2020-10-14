@@ -2,11 +2,21 @@ package org.nalanta.execution;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.Consumer;
+import java.util.Objects;
 
 public class ExecutionGraph {
 
-    ExecutionNode entranceNode;
+    final Map<String, ExecutionNode> nodes = new HashMap<>(2);
+
+    ExecutionNode defaultEntrance;
+
+    ExecutionNode getDefaultEntrance() {
+        return defaultEntrance;
+    }
+
+    ExecutionNode getNode(String name) {
+        return nodes.get(name);
+    }
 
     public static ExecutionGraphBuilder builder() {
         return new ExecutionGraphBuilder();
@@ -20,57 +30,36 @@ public class ExecutionGraph {
 
         ExecutionGraph graph;
 
-        Map<String, ExecutionNode> nodes;
-
         ExecutionGraphBuilder() {
             finished = false;
             graph = new ExecutionGraph();
-            nodes = new HashMap<>();
         }
 
-        public ExecutionGraphBuilder addNode(String name, Consumer<ExecutionContext> task) {
-            if(finished) {
-                throw new IllegalStateException("can not modify graph after build()");
-            }
+        public ExecutionGraphBuilder addNode(String name, ExecutionTask task) {
+            requireNotFinished();
             if(name == null || task == null) {
                 throw new NullPointerException();
             }
-            ExecutionNode node = new ExecutionNode(name, task);
-            nodes.put(name, node);
+            graph.nodes.put(name, new ExecutionNode(name, task));
             return this;
         }
 
-        public ExecutionGraphBuilder linkNodes(String from, String to) {
-            if(finished) {
-                throw new IllegalStateException("can not modify graph after build()");
-            }
-            ExecutionNode fromNode = nodes.get(from);
-            ExecutionNode toNode = nodes.get(to);
-            if(fromNode == null || toNode == null) {
-                throw new NullPointerException();
-            }
-            fromNode.setNext(to, toNode);
-            return this;
-        }
-
-        public ExecutionGraphBuilder setEntrance(String name) {
-            ExecutionNode entranceNode = nodes.get(name);
-            if(entranceNode == null) {
-                throw new NullPointerException();
-            }
-            graph.entranceNode = entranceNode;
+        public ExecutionGraphBuilder setDefaultEntrance(String name) {
+            requireNotFinished();
+            graph.defaultEntrance = Objects.requireNonNull(graph.nodes.get(name));
             return this;
         }
 
         public ExecutionGraph build() {
-            if(graph.entranceNode == null) {
-                throw new IllegalStateException("can not build graph with no entrance");
-            }
-            if(finished) {
-                throw new IllegalStateException("can not rebuild graph after build()");
-            }
+            requireNotFinished();
             finished = true;
             return graph;
+        }
+
+        private void requireNotFinished() {
+            if(finished) {
+                throw new IllegalStateException("can not operate graph after build()");
+            }
         }
     }
 }
