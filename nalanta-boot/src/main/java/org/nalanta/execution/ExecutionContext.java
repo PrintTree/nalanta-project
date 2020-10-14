@@ -106,14 +106,14 @@ public class ExecutionContext {
         return data.get(key);
     }
 
-    public void syncNext(String nodeName) throws ExecutionInterruptedSignal, InterruptedException {
+    public void syncNext(String nodeName) throws Throwable {
         syncNext(nodeName, 0L, 0, null);
     }
 
     public void syncNext(String nodeName,
                          long waitTime,
                          Consumer<Object> messageHandler
-    ) throws ExecutionInterruptedSignal, InterruptedException {
+    ) throws Throwable {
         syncNext(nodeName, waitTime, 1, messageHandler);
     }
 
@@ -121,29 +121,47 @@ public class ExecutionContext {
                          long waitTime,
                          int signalCount,
                          Consumer<Object> messageHandler
-    ) throws ExecutionInterruptedSignal, InterruptedException {
-        pointer = checkNextNode(nodeName);
-        if(!state.compareAndSet(EXECUTING, SYNC_WAITING)) {
-            throw new IllegalStateException(snapshot() + ": current state is not EXECUTING while setting SYNC_WAITING");
-        }
-        long waitStartTime = System.currentTimeMillis();
-        for(int i = 0; i < signalCount; i++) {
-            if(waitTime <= 0L) { //不等待
-
+    ) throws Throwable {
+        Throwable t = null;
+        try {
+            ExecutionNode nextNode = checkNextNode(nodeName);
+            if(!state.compareAndSet(EXECUTING, SYNC_WAITING)) {
+                throw new IllegalStateException(snapshot() + ": current state is not EXECUTING while setting SYNC_WAITING");
             }
-            Object message = messageQueue.poll(waitTime, TimeUnit.MILLISECONDS);
-            if(message == null) { //超时
-                if(!state.compareAndSet(SYNC_WAITING, SYNC_TIMEOUT)) {
-                    throw new IllegalStateException(snapshot() + ": current state is not SYNC_WAITING while setting SYNC_TIMEOUT");
+            pointer = nextNode;
+            if(signalCount == 0) {
+                throw ExecutionInterruptedSignal.SIGNAL;
+            }
+            long waitStartTime = System.currentTimeMillis();
+            for(int i = 0; i < signalCount; i++) {
+                Object message = messageQueue.poll(waitTime, TimeUnit.MILLISECONDS);
+                if(message == null) { //超时
+                    state.set(SYNC_TIMEOUT);
+                    break;
                 }
-                break;
+                else {
+                    if(messageHandler != null) {
+                        //may throw SIGNAL too
+                        messageHandler.accept(message);
+                    }
+                    waitTime -= (System.currentTimeMillis() - waitStartTime);
+                }
             }
-            else {
-                messageHandler.accept(message);
-                waitTime -= (System.currentTimeMillis() - waitStartTime);
+            throw ExecutionInterruptedSignal.SIGNAL;
+        }
+        catch (ExecutionInterruptedSignal signal) {
+            throw signal;
+        }
+        catch (Throwable throwable) {
+            t = throwable;
+        }
+        finally {
+            if(t != null) {
+                executingException = t;
+                state.set(ERROR);
+                throw t;
             }
         }
-        throw ExecutionInterruptedSignal.SIGNAL;
     }
 
     public void asyncNext(String nodeName) throws ExecutionInterruptedSignal {

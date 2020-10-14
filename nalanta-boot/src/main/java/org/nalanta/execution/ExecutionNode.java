@@ -23,7 +23,7 @@ public class ExecutionNode {
             context.unexpectedException();
             return;
         }
-        throw new IllegalStateException(context.snapshot() + ": lose control, please invoke end or wait method");
+        throw new IllegalStateException(context.snapshot() + ": lose control");
     }
 
     @Override
