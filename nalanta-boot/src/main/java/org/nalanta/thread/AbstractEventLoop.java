@@ -19,7 +19,7 @@ public abstract class AbstractEventLoop<E> implements EventLoop<E> {
 
     protected List<Runnable> loopTasks;
     
-    protected Consumer<E> queuedTaskHandler;
+    protected Consumer<E> queuedEventHandler;
 
     protected Consumer<E> rejectionHandler;
     
@@ -27,7 +27,7 @@ public abstract class AbstractEventLoop<E> implements EventLoop<E> {
     
     protected long loopDelay;
 
-    protected long takeTaskWaitTime;
+    protected long takeEventWaitTime;
     
     protected Consumer<Throwable> queuedTaskExceptionHandler;
 
@@ -87,7 +87,7 @@ public abstract class AbstractEventLoop<E> implements EventLoop<E> {
                 lifecycleStatus.set(NEW);
                 return false;
             }
-            if(queuedTaskHandler == null) {
+            if(queuedEventHandler == null) {
                 lifecycleStatus.set(NEW);
                 return false;
             }
@@ -111,8 +111,8 @@ public abstract class AbstractEventLoop<E> implements EventLoop<E> {
             if(loopDelay < 0L) {
                 loopDelay = 0L;
             }
-            if(takeTaskWaitTime < 0L) {
-                takeTaskWaitTime = 0L;
+            if(takeEventWaitTime < 0L) {
+                takeEventWaitTime = 0L;
             }
             thread.start();
             return true;
@@ -147,8 +147,8 @@ public abstract class AbstractEventLoop<E> implements EventLoop<E> {
     }
 
     @Override
-    public EventLoop<E> setQueuedTaskHandler(Consumer<E> handler) {
-        queuedTaskHandler = handler;
+    public EventLoop<E> setQueuedEventHandler(Consumer<E> handler) {
+        queuedEventHandler = handler;
         return this;
     }
 
@@ -183,8 +183,8 @@ public abstract class AbstractEventLoop<E> implements EventLoop<E> {
     }
 
     @Override
-    public EventLoop<E> setTakeTaskWaitTime(long milliseconds) {
-        takeTaskWaitTime = milliseconds;
+    public EventLoop<E> setTakeEventWaitTime(long milliseconds) {
+        takeEventWaitTime = milliseconds;
         return this;
     }
 

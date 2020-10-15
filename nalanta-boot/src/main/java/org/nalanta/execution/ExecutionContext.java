@@ -3,20 +3,22 @@ package org.nalanta.execution;
 import java.util.Objects;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Consumer;
 
 public class ExecutionContext {
 
     //============================== state code ==============================
 
-    private static final int STAND_BY = 1;
+    private static final int STAND_BY = 1; //if state > STAND_BY, state =X=> STAND_BY
     private static final int EXECUTING = 1 << 1;
     private static final int SYNC_WAITING = 1 << 2;
     private static final int ASYNC_WAITING = 1 << 3;
-    private static final int SYNC_TIMEOUT = 1 << 4;
-    private static final int ASYNC_TIMEOUT = 1 << 5;
-    private static final int SUCCESS = 1 << 6;
-    private static final int ERROR = 1 << 7;
+    private static final int SYNC_TIMEOUT = 1 << 4; //immutable
+    private static final int ASYNC_TIMEOUT = 1 << 5; //immutable
+    private static final int SUCCESS = 1 << 6; //immutable
+    private static final int ERROR = 1 << 7; //immutable
 
     //============================== private field ==============================
 
@@ -28,6 +30,8 @@ public class ExecutionContext {
 
     private final BlockingQueue<Object> messageQueue = new LinkedTransferQueue<>();
 
+    private final Lock stateLock = new ReentrantLock();
+
     private final long deadLine;
 
     private final ExecutionManager executionManager;
@@ -38,7 +42,9 @@ public class ExecutionContext {
 
     private Thread currentThread;
 
-    private Throwable executingException;
+    private Throwable exception;
+
+    private AtomicInteger asyncSignalCount;
 
     //============================== public api ==============================
 
@@ -85,7 +91,7 @@ public class ExecutionContext {
             throw new IllegalStateException(snapshot() + ": current state is not STAND_BY while setting EXECUTING");
         }
         currentThread = Thread.currentThread();
-        pointer.execute(this);
+        executeNodeTask();
     }
 
     /**
@@ -122,46 +128,33 @@ public class ExecutionContext {
                          int signalCount,
                          Consumer<Object> messageHandler
     ) throws Throwable {
-        Throwable t = null;
-        try {
-            ExecutionNode nextNode = checkNextNode(nodeName);
-            if(!state.compareAndSet(EXECUTING, SYNC_WAITING)) {
-                throw new IllegalStateException(snapshot() + ": current state is not EXECUTING while setting SYNC_WAITING");
-            }
-            pointer = nextNode;
-            if(signalCount == 0) {
-                throw ExecutionInterruptedSignal.SIGNAL;
-            }
-            long waitStartTime = System.currentTimeMillis();
-            for(int i = 0; i < signalCount; i++) {
-                Object message = messageQueue.poll(waitTime, TimeUnit.MILLISECONDS);
-                if(message == null) { //超时
-                    state.set(SYNC_TIMEOUT);
-                    break;
+        pointer = checkNextNode(nodeName);
+        if(!state.compareAndSet(EXECUTING, SYNC_WAITING)) {
+            throw new IllegalStateException(snapshot() + ": current state is not EXECUTING while setting SYNC_WAITING");
+        }
+        long waitStartTime = System.currentTimeMillis();
+        for(int i = 0; i < signalCount; i++) {
+            Object message = messageQueue.poll(waitTime, TimeUnit.MILLISECONDS);
+            if(message == null) { //timeout
+                if(!state.compareAndSet(SYNC_WAITING, SYNC_TIMEOUT)) {
+                    throw new IllegalStateException(snapshot() + ": current state is not SYNC_WAITING while setting SYNC_TIMEOUT");
                 }
-                else {
-                    if(messageHandler != null) {
-                        //may throw SIGNAL too
-                        messageHandler.accept(message);
-                    }
-                    waitTime -= (System.currentTimeMillis() - waitStartTime);
+                throw ExecutionInterruptedSignal.endSignal();
+            }
+            else {
+                if(messageHandler != null) {
+                    messageHandler.accept(message);
                 }
-            }
-            throw ExecutionInterruptedSignal.SIGNAL;
-        }
-        catch (ExecutionInterruptedSignal signal) {
-            throw signal;
-        }
-        catch (Throwable throwable) {
-            t = throwable;
-        }
-        finally {
-            if(t != null) {
-                executingException = t;
-                state.set(ERROR);
-                throw t;
+                waitTime -= (System.currentTimeMillis() - waitStartTime);
             }
         }
+        if(!state.compareAndSet(SYNC_WAITING, EXECUTING)) {
+            throw new IllegalStateException(snapshot() + ": current state is not SYNC_WAITING while setting EXECUTING");
+        }
+        if(Thread.interrupted()) {
+            throw new InterruptedException();
+        }
+        throw ExecutionInterruptedSignal.syncSignal();
     }
 
     public void asyncNext(String nodeName) throws ExecutionInterruptedSignal {
@@ -181,56 +174,53 @@ public class ExecutionContext {
                           Consumer<Object> messageHandler
     ) throws ExecutionInterruptedSignal {
         pointer = checkNextNode(nodeName);
+        if(currentThread != Thread.currentThread()) {
+            throw new IllegalStateException(snapshot() + ": currentThread != Thread.currentThread()");
+        }
+        if(state.get() != EXECUTING) {
+            throw new IllegalStateException(snapshot() + ": current state is not EXECUTING before setting ASYNC_WAITING");
+        }
         currentThread = null;
-        if(!state.compareAndSet(EXECUTING, SYNC_WAITING)) {
-            throw new IllegalStateException("ExecutionContext(" + id + ")[" + pointer.name + "]: current state is not EXECUTING while setting SYNC_WAITING");
+        asyncSignalCount = new AtomicInteger(signalCount);
+        if(!state.compareAndSet(EXECUTING, ASYNC_WAITING)) {
+            throw new IllegalStateException(snapshot() + ": current state is not EXECUTING while setting ASYNC_WAITING");
         }
 
-        throw ExecutionInterruptedSignal.SIGNAL;
+        throw ExecutionInterruptedSignal.asyncSignal();
     }
 
     public void end() throws ExecutionInterruptedSignal {
         pointer = null;
         currentThread = null;
-        throw ExecutionInterruptedSignal.SIGNAL;
-    }
-
-    public String snapshot() {
-        return "ExecutionContext(" + id + ")[" + currentThread + "][" + pointer + "]";
+        throw ExecutionInterruptedSignal.endSignal();
     }
 
     //============================== package api ==============================
 
-    boolean setSuccessIfExecuting() {
-        return state.compareAndSet(EXECUTING, EXECUTING);
-    }
-
-    void setError(Throwable t) {
-        executingException = t;
-        state.set(ERROR);
-    }
-
-    boolean isTimeout() {
-        return (state.get() & 0B1100) != 0;
-    }
-
-    void acceptMessage(Object message) {
+    void sendMessage(Objects message) {
         messageQueue.offer(message);
     }
 
-    void nextNode() {
-        if(pointer == null) {
-            executionManager.notifyExecutionEnd(id);
+    void asyncProceed() {
+        if(!state.compareAndSet(ASYNC_WAITING, EXECUTING)) {
+
         }
-        else {
-            executionManager.notifyStartNextNode(id);
-        }
+        asyncSignalCount = null;
+        currentThread = Thread.currentThread();
     }
 
-    void unexpectedException() {
-        executionManager.notifyException(id);
+    void asyncEnd() {}
+
+    void trySyncEnd() {
+        try {
+            currentThread.interrupt();
+        }
+        catch (Throwable ignored) {}
     }
 
+    String snapshot() {
+        return "ExecutionContext(" + id + ")[" + currentThread + "][" + pointer + "]";
+    }
 
     //============================== private method ==============================
 
@@ -260,6 +250,37 @@ public class ExecutionContext {
         return node;
     }
 
-
+    private void executeNodeTask() {
+        executeTask: while (true) {
+            try {
+                pointer.execute(this);
+            }
+            catch (ExecutionInterruptedSignal signal) {
+                handleSignal: while (true) {
+                    switch (signal.getType()) {
+                        case ExecutionInterruptedSignal.SYNC:
+                            if(!state.compareAndSet(SYNC_WAITING, EXECUTING)) {
+                                signal = ExecutionInterruptedSignal.endSignal(new IllegalStateException(snapshot() + ": current state is not SYNC_WAITING while setting EXECUTING"));
+                                continue handleSignal;
+                            }
+                            continue executeTask;
+                        case ExecutionInterruptedSignal.ASYNC:
+                            break executeTask;
+                        case ExecutionInterruptedSignal.END:
+                            Throwable t = signal.getError();
+                            if(t != null) {
+                                exception = t;
+                                state.set(ERROR);
+                                t.printStackTrace();
+                            }
+                            else {
+                                state.set(SUCCESS);
+                            }
+                            break executeTask;
+                    }
+                }
+            }
+        }
+    }
 
 }

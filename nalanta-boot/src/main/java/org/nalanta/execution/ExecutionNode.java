@@ -11,19 +11,17 @@ public class ExecutionNode {
         this.task = task;
     }
 
-    void execute(ExecutionContext context) {
+    void execute(ExecutionContext context) throws ExecutionInterruptedSignal {
         try {
             task.execute(context);
+            throw new IllegalStateException(context.getId() + ": lose control");
         }
-        catch (ExecutionInterruptedSignal executionInterruptedSignal) {
-            context.nextNode();
-            return;
+        catch (ExecutionInterruptedSignal signal) {
+            throw signal;
         }
         catch (Throwable throwable) {
-            context.unexpectedException();
-            return;
+            throw ExecutionInterruptedSignal.endSignal(throwable);
         }
-        throw new IllegalStateException(context.snapshot() + ": lose control");
     }
 
     @Override

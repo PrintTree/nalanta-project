@@ -2,7 +2,6 @@ package org.nalanta.thread;
 
 import java.util.UUID;
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.LinkedTransferQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.LockSupport;
@@ -40,7 +39,7 @@ public class DefaultEventLoop<E> extends AbstractEventLoop<E> {
                     }
                     else if(lifecycleStatus.get() == PAUSING) {
                         do {
-                            LockSupport.parkNanos(1_000_000_000L); //1 second
+                            LockSupport.park();
                         } while (lifecycleStatus.get() == PAUSING);
                     } else { //can not know what status it is now
                         continue;
@@ -49,8 +48,8 @@ public class DefaultEventLoop<E> extends AbstractEventLoop<E> {
                 //take event and handle it
                 E event = null;
                 try {
-                    event = takeTaskWaitTime > 0L ?
-                            queue.poll(takeTaskWaitTime, TimeUnit.MILLISECONDS) :
+                    event = takeEventWaitTime > 0L ?
+                            queue.poll(takeEventWaitTime, TimeUnit.MILLISECONDS) :
                             queue.take();
                 }
                 catch (InterruptedException interruptedException) {
@@ -58,7 +57,7 @@ public class DefaultEventLoop<E> extends AbstractEventLoop<E> {
                 }
                 if(event != null) {
                     try {
-                        queuedTaskHandler.accept(event);
+                        queuedEventHandler.accept(event);
                     }
                     catch (Throwable throwable) {
                         try {

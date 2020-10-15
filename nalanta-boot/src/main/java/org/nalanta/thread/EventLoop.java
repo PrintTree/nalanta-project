@@ -15,7 +15,7 @@ public interface EventLoop<E> {
 
     boolean shutdown();
 
-    EventLoop<E> setQueuedTaskHandler(Consumer<E> handler);
+    EventLoop<E> setQueuedEventHandler(Consumer<E> handler);
 
     EventLoop<E> setRejectionHandler(Consumer<E> handler);
 
@@ -25,7 +25,7 @@ public interface EventLoop<E> {
 
     EventLoop<E> setLoopDelay(long milliseconds);
 
-    EventLoop<E> setTakeTaskWaitTime(long milliseconds);
+    EventLoop<E> setTakeEventWaitTime(long milliseconds);
 
     EventLoop<E> setQueuedTaskExceptionHandler(Consumer<Throwable> handler);
 
