@@ -88,6 +88,15 @@ public abstract class AbstractJsonObject implements JsonObject {
     }
 
     @Override
+    public Object simplify() {
+        Map<String, Object> map = new LinkedHashMap<>();
+        for(Map.Entry<String, JsonEntity> e : internal.entrySet()) {
+            map.put(e.getKey(), e.getValue().simplify());
+        }
+        return map;
+    }
+
+    @Override
     public Object get(String key) {
         JsonEntity value = internal.get(key);
         switch (value.type()) {

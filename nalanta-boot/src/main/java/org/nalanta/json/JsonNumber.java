@@ -24,6 +24,11 @@ public class JsonNumber implements JsonEntity {
         return internal.toString();
     }
 
+    @Override
+    public Object simplify() {
+        return internal;
+    }
+
     public Number internalNumber() {
         return internal;
     }

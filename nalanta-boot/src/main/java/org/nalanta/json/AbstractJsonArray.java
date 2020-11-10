@@ -1,7 +1,9 @@
 package org.nalanta.json;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 public abstract class AbstractJsonArray implements JsonArray {
 
@@ -72,6 +74,15 @@ public abstract class AbstractJsonArray implements JsonArray {
             sb.deleteCharAt(sb.length() - 1);
         }
         return sb.append(']').toString();
+    }
+
+    @Override
+    public Object simplify() {
+        List<Object> list = new ArrayList<>(internal.size());
+        for(JsonEntity e : internal) {
+            list.add(e.simplify());
+        }
+        return list;
     }
 
     @Override

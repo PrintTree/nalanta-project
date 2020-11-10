@@ -9,9 +9,10 @@ class ImmutableJsonObject extends AbstractJsonObject {
      */
     private String stringifyCache;
 
+    private Map<String, Object> simplifyCache;
+
     ImmutableJsonObject(Map<String, JsonEntity> map) {
         super(map);
-        stringifyCache = super.stringify();
     }
 
     @Override
@@ -30,7 +31,27 @@ class ImmutableJsonObject extends AbstractJsonObject {
 
     @Override
     public String stringify() {
+        if(stringifyCache == null) {
+            synchronized (this) {
+                if(stringifyCache == null) {
+                    stringifyCache = super.stringify();
+                }
+            }
+        }
         return stringifyCache;
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public Object simplify() {
+        if(simplifyCache == null) {
+            synchronized (this) {
+                if(simplifyCache == null) {
+                    simplifyCache = (Map<String, Object>) super.simplify();
+                }
+            }
+        }
+        return simplifyCache;
     }
 
     @Override

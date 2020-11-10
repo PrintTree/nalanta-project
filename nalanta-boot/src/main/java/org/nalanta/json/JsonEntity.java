@@ -20,4 +20,6 @@ public interface JsonEntity {
 
     String stringify();
 
+    Object simplify();
+
 }

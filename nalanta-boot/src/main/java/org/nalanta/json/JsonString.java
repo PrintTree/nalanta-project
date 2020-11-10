@@ -23,6 +23,11 @@ public class JsonString implements JsonEntity {
         return "\"" + internal + "\"";
     }
 
+    @Override
+    public Object simplify() {
+        return internal;
+    }
+
     public String internalString() {
         return internal;
     }

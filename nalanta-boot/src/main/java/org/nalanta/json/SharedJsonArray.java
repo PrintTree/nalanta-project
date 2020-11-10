@@ -1,5 +1,6 @@
 package org.nalanta.json;
 
+import java.util.ArrayList;
 import java.util.List;
 
 class SharedJsonArray extends AbstractJsonArray {
@@ -31,6 +32,11 @@ class SharedJsonArray extends AbstractJsonArray {
     @Override
     public synchronized String stringify() {
         return super.stringify();
+    }
+
+    @Override
+    public synchronized Object simplify() {
+        return super.simplify();
     }
 
     @Override

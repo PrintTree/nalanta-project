@@ -1,6 +1,7 @@
 package org.nalanta.json;
 
 import java.util.List;
+import java.util.Map;
 
 class ImmutableJsonArray extends AbstractJsonArray {
 
@@ -8,6 +9,8 @@ class ImmutableJsonArray extends AbstractJsonArray {
      * cache the string content of this JsonArray, because it's immutable.
      */
     private String stringifyCache;
+
+    private List<Object> simplifyCache;
 
     ImmutableJsonArray(List<JsonEntity> list) {
         super(list);
@@ -31,7 +34,27 @@ class ImmutableJsonArray extends AbstractJsonArray {
 
     @Override
     public String stringify() {
+        if(stringifyCache == null) {
+            synchronized (this) {
+                if(stringifyCache == null) {
+                    stringifyCache = super.stringify();
+                }
+            }
+        }
         return stringifyCache;
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public Object simplify() {
+        if(simplifyCache == null) {
+            synchronized (this) {
+                if(simplifyCache == null) {
+                    simplifyCache = (List<Object>) super.simplify();
+                }
+            }
+        }
+        return simplifyCache;
     }
 
     @Override

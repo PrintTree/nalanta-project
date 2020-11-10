@@ -18,4 +18,9 @@ public class JsonNull implements JsonEntity {
     public String stringify() {
         return "null";
     }
+
+    @Override
+    public Object simplify() {
+        return null;
+    }
 }

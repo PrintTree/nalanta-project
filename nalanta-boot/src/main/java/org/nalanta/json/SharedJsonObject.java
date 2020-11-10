@@ -1,5 +1,6 @@
 package org.nalanta.json;
 
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 class SharedJsonObject extends AbstractJsonObject {
@@ -31,6 +32,11 @@ class SharedJsonObject extends AbstractJsonObject {
     @Override
     public synchronized String stringify() {
         return super.stringify();
+    }
+
+    @Override
+    public synchronized Object simplify() {
+        return super.simplify();
     }
 
     @Override
