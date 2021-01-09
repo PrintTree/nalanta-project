@@ -46,7 +46,7 @@ class ImmutableJsonArray extends AbstractJsonArray {
 
     @Override
     @SuppressWarnings("unchecked")
-    public Object simplify() {
+    public List<Object> simplify() {
         if(simplifyCache == null) {
             synchronized (this) {
                 if(simplifyCache == null) {

@@ -77,7 +77,7 @@ public abstract class AbstractJsonArray implements JsonArray {
     }
 
     @Override
-    public Object simplify() {
+    public List<Object> simplify() {
         List<Object> list = new ArrayList<>(internal.size());
         for(JsonEntity e : internal) {
             list.add(e.simplify());

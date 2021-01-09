@@ -43,7 +43,7 @@ class ImmutableJsonObject extends AbstractJsonObject {
 
     @Override
     @SuppressWarnings("unchecked")
-    public Object simplify() {
+    public Map<String, Object> simplify() {
         if(simplifyCache == null) {
             synchronized (this) {
                 if(simplifyCache == null) {

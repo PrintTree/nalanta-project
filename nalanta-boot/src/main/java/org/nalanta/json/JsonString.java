@@ -24,7 +24,7 @@ public class JsonString implements JsonEntity {
     }
 
     @Override
-    public Object simplify() {
+    public String simplify() {
         return internal;
     }
 

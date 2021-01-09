@@ -26,7 +26,7 @@ public class JsonBoolean implements JsonEntity {
     }
 
     @Override
-    public Object simplify() {
+    public Boolean simplify() {
         return internal;
     }
 

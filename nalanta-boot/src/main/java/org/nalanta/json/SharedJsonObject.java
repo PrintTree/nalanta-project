@@ -35,7 +35,7 @@ class SharedJsonObject extends AbstractJsonObject {
     }
 
     @Override
-    public synchronized Object simplify() {
+    public synchronized Map<String, Object> simplify() {
         return super.simplify();
     }
 

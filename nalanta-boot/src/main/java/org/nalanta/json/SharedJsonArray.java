@@ -35,7 +35,7 @@ class SharedJsonArray extends AbstractJsonArray {
     }
 
     @Override
-    public synchronized Object simplify() {
+    public synchronized List<Object> simplify() {
         return super.simplify();
     }
 

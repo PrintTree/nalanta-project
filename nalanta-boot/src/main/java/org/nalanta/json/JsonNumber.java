@@ -25,7 +25,7 @@ public class JsonNumber implements JsonEntity {
     }
 
     @Override
-    public Object simplify() {
+    public Number simplify() {
         return internal;
     }
 
