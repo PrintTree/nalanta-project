@@ -18,24 +18,24 @@ public class ExecutionGraph {
         return nodes.get(name);
     }
 
-    public static ExecutionGraphBuilder builder() {
-        return new ExecutionGraphBuilder();
+    public static Builder builder() {
+        return new Builder();
     }
 
     ExecutionGraph() {}
 
-    public static class ExecutionGraphBuilder {
+    public static class Builder {
 
         boolean finished;
 
         ExecutionGraph graph;
 
-        ExecutionGraphBuilder() {
+        Builder() {
             finished = false;
             graph = new ExecutionGraph();
         }
 
-        public ExecutionGraphBuilder addNode(String name, ExecutionTask task) {
+        public Builder addNode(String name, ExecutionTask task) {
             requireNotFinished();
             if(name == null || task == null) {
                 throw new NullPointerException();
@@ -44,7 +44,7 @@ public class ExecutionGraph {
             return this;
         }
 
-        public ExecutionGraphBuilder setDefaultEntrance(String name) {
+        public Builder setDefaultEntrance(String name) {
             requireNotFinished();
             graph.defaultEntrance = Objects.requireNonNull(graph.nodes.get(name));
             return this;

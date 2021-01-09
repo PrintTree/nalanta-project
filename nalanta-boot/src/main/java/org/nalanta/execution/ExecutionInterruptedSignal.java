@@ -1,10 +1,8 @@
 package org.nalanta.execution;
 
-import org.omg.CORBA.PUBLIC_MEMBER;
-
 /**
  * this class used to ignore the code after
- * ExecutionContext's syncNext(), asyncNext, end() method invoked.
+ * ExecutionContext's syncNext(), asyncNext(), end() method invoked.
  * throw a Throwable is the only way to do that.
  */
 public class ExecutionInterruptedSignal extends Throwable {
