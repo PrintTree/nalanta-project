@@ -1,11 +1,36 @@
 package org.nalanta.json;
 
+import java.util.Map;
+
 import static org.nalanta.json.JsonEntity.Type.OBJECT;
 
 public interface JsonObject extends JsonEntity {
 
     static JsonObject from(String jsonString) {
         return JsonUtil.parseObject(jsonString);
+    }
+
+    static JsonObject from(Map<String, ?> map) {
+        JsonObject parsed = null;
+        try {
+            parsed = JsonUtil.parseObject(map);
+        } catch (Exception ignored) {
+            //warn log
+        }
+        return parsed == null ? create() : parsed;
+    }
+
+    static JsonObject from(Object in) {
+        if (in instanceof String) {
+            return from((String) in);
+        } else if (in instanceof Map) {
+            @SuppressWarnings("unchecked")
+            Map<String, ?> map = (Map<String, ?>) in;
+            return from(map);
+        } else {
+            //warn log
+            return create();
+        }
     }
 
     static JsonObject create() {

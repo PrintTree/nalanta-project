@@ -9,6 +9,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -17,42 +18,86 @@ final class JsonUtil {
     private JsonUtil() {}
 
     static ObjectMapper objectMapper = new ObjectMapper();
-    static String testJsonString = "{\"name\":\"Alice\",\"code\":2.75,\"dept\":{},\"attr\":[\"u1\",[1,2,3],[],{\"k\":\"v\"},true,3],\"test\":null}";
     static {
         SimpleModule module = new SimpleModule();
         module.addDeserializer(JsonEntity.class, new JsonEntityDeserializer());
         objectMapper.registerModule(module);
     }
 
-    public static void main(String[] args) throws Exception {
-
-        //JsonEntity jsonEntity = objectMapper.readValue(testJsonString, JsonEntity.class);
-        //System.out.println(jsonEntity.stringify());
-
-        long t1 = System.currentTimeMillis();
-        for(int i = 0; i < 100000; i++) {
-            JsonObject jsonObject = JsonObject.from(testJsonString);
-            jsonObject.stringify();
-        }
-        System.out.println(System.currentTimeMillis() - t1);
-
-        /*long t3 = System.currentTimeMillis();
-        for(int i = 0; i < 100000; i++) {
-            Map map = objectMapper.readValue(testJsonString, Map.class);
-            objectMapper.writeValueAsString(map);
-        }
-        System.out.println(System.currentTimeMillis() - t3);*/
-
-        TimeUnit.SECONDS.sleep(600);
-
-    }
-
     static JsonObject parseObject(String jsonString) {
         return (JsonObject) parseEntity(jsonString);
     }
 
+    static JsonObject parseObject(Map<String, ?> map) {
+        JsonObject jsonObject = new StandardJsonObject();
+        for (Map.Entry<String, ?> entry : map.entrySet()) {
+            String key = entry.getKey();
+            Object val = entry.getValue();
+            if (val instanceof String) {
+                jsonObject.put(key, (String) val);
+            } else if (val instanceof Number) {
+                jsonObject.put(key, (Number) val);
+            } else if (val instanceof Boolean) {
+                jsonObject.put(key, (Boolean) val);
+            } else if (val instanceof JsonEntity) {
+                jsonObject.put(key, (JsonEntity) val);
+            } else if (val instanceof Map) {
+                try {
+                    @SuppressWarnings("unchecked")
+                    JsonObject nestedObject = parseObject((Map<String, ?>) val);
+                    jsonObject.put(key, nestedObject);
+                } catch (Exception ignored) {
+                    //warn log
+                }
+            } else if (val instanceof List) {
+                try {
+                    JsonArray nestedArray = parseArray((List<?>) val);
+                    jsonObject.put(key, nestedArray);
+                } catch (Exception ignored) {
+                    //warn log
+                }
+            } else {
+                //warn log
+            }
+        }
+        return jsonObject;
+    }
+
     static JsonArray parseArray(String jsonString) {
         return (JsonArray) parseEntity(jsonString);
+    }
+
+    static JsonArray parseArray(List<?> list) {
+        JsonArray jsonArray = new StandardJsonArray();
+        for (Object element : list) {
+            if (element instanceof String) {
+                jsonArray.add((String) element);
+            } else if (element instanceof Number) {
+                jsonArray.add((Number) element);
+            } else if (element instanceof Boolean) {
+                jsonArray.add((Boolean) element);
+            } else if (element instanceof JsonEntity) {
+                jsonArray.add((JsonEntity) element);
+            } else if (element instanceof Map) {
+                try {
+                    @SuppressWarnings("unchecked")
+                    JsonObject nestedObject = parseObject((Map<String, ?>) element);
+                    jsonArray.add(nestedObject);
+                } catch (Exception ignored) {
+                    //warn log
+                }
+            } else if (element instanceof List) {
+                try {
+                    JsonArray nestedArray = parseArray((List<?>) element);
+                    jsonArray.add(nestedArray);
+                } catch (Exception ignored) {
+                    //warn log
+                }
+            } else {
+                //warn log
+            }
+        }
+        return jsonArray;
     }
 
     static JsonEntity parseEntity(String jsonString) {
